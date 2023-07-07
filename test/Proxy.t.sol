@@ -20,7 +20,15 @@ contract ProxyTest is Test {
     function test_Owner() public {
         bytes32 salt = keccak256(abi.encode(owner));
         proxy = new Proxy{salt: salt}();
-        vm.prank(address(2));
+        vm.prank(owner);
+        proxy.call();
+    }
+
+    function test_RevertsWhenNotOwner() public {
+        bytes32 salt = keccak256(abi.encode(owner));
+        proxy = new Proxy{salt: salt}();
+        vm.prank(address(3));
+        vm.expectRevert();
         proxy.call();
     }
 }
