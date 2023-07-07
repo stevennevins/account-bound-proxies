@@ -21,7 +21,7 @@ contract ProxyTest is Test {
         bytes32 salt = keccak256(abi.encode(owner));
         proxy = new Proxy{salt: salt}();
         vm.prank(owner);
-        proxy.call();
+        proxy.multiSend("");
     }
 
     function test_RevertsWhenNotOwner() public {
@@ -29,6 +29,6 @@ contract ProxyTest is Test {
         proxy = new Proxy{salt: salt}();
         vm.prank(address(3));
         vm.expectRevert();
-        proxy.call();
+        proxy.multiSend("");
     }
 }

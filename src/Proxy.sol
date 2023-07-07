@@ -52,8 +52,6 @@ contract Proxy is MultiSendCallOnly {
     {
         super.multiSend(transactions);
     }
-
-    function call() public onlyOwner {}
 }
 
 contract ProxyDeployer {
