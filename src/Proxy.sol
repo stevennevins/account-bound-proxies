@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import {MultiSendCallOnly} from "src/MultiSendCallOnly.sol";
 import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
 
 // https://github.com/Uniswap/v3-core/blob/main/contracts/UniswapV3PoolDeployer.sol
@@ -9,7 +10,7 @@ interface ICallbackParams {
     function params() external returns (address, bytes32);
 }
 
-contract Proxy {
+contract Proxy is MultiSendCallOnly {
     /// this will eventually just be a constant
     bytes32 public immutable initCodeHash;
     address public immutable deployer;
@@ -41,6 +42,15 @@ contract Proxy {
             "not owner"
         );
         _;
+    }
+
+    function multiSend(bytes memory transactions)
+        public
+        payable
+        override
+        onlyOwner
+    {
+        super.multiSend(transactions);
     }
 
     function call() public onlyOwner {}
