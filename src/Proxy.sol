@@ -46,7 +46,7 @@ contract Proxy {
     function call() public onlyOwner {}
 }
 
-contract ProxyRegistry {
+contract ProxyDeployer {
     bytes32 public immutable proxyInitCodeHash;
     address owner;
 
