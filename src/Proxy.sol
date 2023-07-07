@@ -12,8 +12,8 @@ interface ICallbackParams {
 
 contract Proxy is MultiSendCallOnly {
     /// this will eventually just be a constant
-    bytes32 public immutable initCodeHash;
-    address public immutable deployer;
+    bytes32 internal immutable initCodeHash;
+    address internal immutable deployer;
 
     constructor() {
         (address _owner, bytes32 _initCodeHash) = ICallbackParams(msg.sender)
