@@ -13,13 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.13;
+
+import {ProxyVerify} from "test/examples/lib/ProxyVerify.sol";
 
 /// @notice Forked WETH9 with support for account bound proxies
-contract WETH9 {
+contract ForkedWETH9 {
     string public name = "Wrapped Ether";
     string public symbol = "WETH";
     uint8 public decimals = 18;
+    address public userProxyDeployer;
 
     event Approval(address indexed src, address indexed guy, uint256 wad);
     event Transfer(address indexed src, address indexed dst, uint256 wad);
@@ -31,6 +34,14 @@ contract WETH9 {
 
     fallback() external payable {
         deposit();
+    }
+
+    receive() external payable {
+        deposit();
+    }
+
+    constructor(address _userProxyDeployer) {
+        userProxyDeployer = _userProxyDeployer;
     }
 
     function deposit() public payable {
@@ -67,7 +78,9 @@ contract WETH9 {
         require(balanceOf[src] >= wad);
 
         if (
-            src != msg.sender && allowance[src][msg.sender] != type(uint256).max
+            src != msg.sender &&
+            allowance[src][msg.sender] != type(uint256).max &&
+            !ProxyVerify.proveOwnerOf(msg.sender, src, userProxyDeployer)
         ) {
             require(allowance[src][msg.sender] >= wad);
             allowance[src][msg.sender] -= wad;
