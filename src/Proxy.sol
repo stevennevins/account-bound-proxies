@@ -15,6 +15,7 @@ contract Proxy is MultiSendCallOnly {
     /// this will eventually just be a constant
     bytes32 internal immutable initCodeHash;
     address internal immutable deployer;
+    address internal pluginLogic;
     error NotOwner();
 
     modifier onlyOwner() {
@@ -43,6 +44,33 @@ contract Proxy is MultiSendCallOnly {
         ) revert NotOwner();
         initCodeHash = _initCodeHash;
         deployer = msg.sender;
+    }
+
+    // solhint-disable-next-line
+    receive() external payable {}
+
+    // solhint-disable-next-line
+    fallback() external payable {
+        address _impl = pluginLogic;
+        assembly {
+            let ptr := mload(0x40)
+            calldatacopy(ptr, 0, calldatasize())
+            let result := delegatecall(gas(), _impl, ptr, calldatasize(), 0, 0)
+            let size := returndatasize()
+            returndatacopy(ptr, 0, size)
+
+            switch result
+            case 0 {
+                revert(ptr, size)
+            }
+            default {
+                return(ptr, size)
+            }
+        }
+    }
+
+    function updatePluginLogic(address _pluginLogic) external onlyOwner {
+        pluginLogic = _pluginLogic;
     }
 
     /// TODO see if this should be called execTransaction for better compatibility with safe libs
