@@ -58,4 +58,19 @@ contract ProxyTest is EncodeTxs, ICallbackParams, Test {
         proxy.multiSend{value: 2}(encode(txs));
         assertEq(address(4).balance, 2);
     }
+
+    function test_EncodedCall() public {
+        bytes32 salt = keccak256(abi.encode(owner));
+        proxy = new Proxy{salt: salt}();
+        txs.push(
+            Transaction(
+                address(this),
+                0,
+                abi.encodeCall(ICallbackParams.params, ()),
+                Operation.Call
+            )
+        );
+        vm.prank(owner);
+        proxy.multiSend(encode(txs));
+    }
 }
