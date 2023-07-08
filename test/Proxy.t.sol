@@ -1,19 +1,25 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
-import "forge-std/Test.sol";
-import "src/Proxy.sol";
+pragma solidity ^0.8.13;
 
-contract ProxyTest is Test {
-    Proxy public proxy;
-    bytes32 public initCodeHash;
-    address owner;
+import {Test} from "forge-std/Test.sol";
+import {Proxy, ICallbackParams} from "src/Proxy.sol";
+import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 
-    function params() public returns (address, bytes32) {
+contract ProxyTest is EncodeTxs, ICallbackParams, Test {
+    Proxy internal proxy;
+    bytes32 internal immutable initCodeHash;
+    address internal owner;
+    Transaction[] internal txs;
+
+    function params() external view returns (address, bytes32) {
         return (owner, initCodeHash);
     }
 
-    function setUp() public {
+    constructor() {
         initCodeHash = keccak256(type(Proxy).creationCode);
+    }
+
+    function setUp() public {
         owner = address(2);
     }
 
@@ -30,5 +36,15 @@ contract ProxyTest is Test {
         vm.prank(address(3));
         vm.expectRevert();
         proxy.multiSend("");
+    }
+
+    function test_ExecuteTransfer() public {
+        bytes32 salt = keccak256(abi.encode(owner));
+        proxy = new Proxy{salt: salt}();
+        vm.deal(owner, 1 ether);
+        txs.push(Transaction(address(4), 1, hex"", Operation.Call));
+        vm.prank(owner);
+        proxy.multiSend{value: 1}(encode(txs));
+        assertEq(address(4).balance, 1);
     }
 }

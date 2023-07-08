@@ -8,6 +8,7 @@ pragma solidity >=0.7.0 <0.9.0;
  * @author Richard Meissner - @rmeissner
  */
 /// modified from safe-contracts repo
+/// might want to make this a library if possible
 contract MultiSendCallOnly {
     /**
      * @dev Sends multiple transactions and reverts all if one fails.
