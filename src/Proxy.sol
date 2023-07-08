@@ -31,17 +31,7 @@ contract Proxy is MultiSendCallOnly {
     }
 
     constructor() {
-        (address _owner, bytes32 _initCodeHash) = ICallbackParams(msg.sender)
-            .params();
-
-        if (
-            address(this) !=
-            Create2.computeAddress(
-                keccak256(abi.encode(_owner)),
-                _initCodeHash,
-                msg.sender
-            )
-        ) revert NotOwner();
+        (, bytes32 _initCodeHash) = ICallbackParams(msg.sender).params();
         initCodeHash = _initCodeHash;
         deployer = msg.sender;
     }
