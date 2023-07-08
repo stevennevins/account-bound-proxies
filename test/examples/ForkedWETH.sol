@@ -33,26 +33,26 @@ contract ForkedWETH9 {
     mapping(address => mapping(address => uint256)) public allowance;
 
     fallback() external payable {
-        deposit();
+        deposit(msg.sender);
     }
 
     receive() external payable {
-        deposit();
+        deposit(msg.sender);
     }
 
     constructor(address _userProxyDeployer) {
         userProxyDeployer = _userProxyDeployer;
     }
 
-    function deposit() public payable {
-        balanceOf[msg.sender] += msg.value;
-        emit Deposit(msg.sender, msg.value);
+    function deposit(address to) public payable {
+        balanceOf[to] += msg.value;
+        emit Deposit(to, msg.value);
     }
 
-    function withdraw(uint256 wad) public {
+    function withdraw(uint256 wad, address to) public {
         require(balanceOf[msg.sender] >= wad);
         balanceOf[msg.sender] -= wad;
-        payable(msg.sender).transfer(wad);
+        payable(to).transfer(wad);
         emit Withdrawal(msg.sender, wad);
     }
 
