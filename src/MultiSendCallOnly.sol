@@ -9,7 +9,7 @@ pragma solidity >=0.7.0 <0.9.0;
  */
 /// modified from safe-contracts repo
 /// might want to make this a library if possible
-contract MultiSendCallOnly {
+library MultiSendCallOnly {
     /**
      * @dev Sends multiple transactions and reverts all if one fails.
      * @param transactions Encoded transactions. Each transaction is encoded as a packed bytes of
@@ -24,7 +24,7 @@ contract MultiSendCallOnly {
      * @notice This method is payable as delegatecalls keep the msg.value from the previous call
      *         If the calling method (e.g. execTransaction) received ETH this would revert otherwise
      */
-    function multiSend(bytes memory transactions) public payable virtual {
+    function multiSend(bytes memory transactions) internal {
         // solhint-disable-next-line no-inline-assembly
         assembly {
             let length := mload(transactions)

@@ -5,7 +5,7 @@ import {MultiSendCallOnly} from "src/MultiSendCallOnly.sol";
 import {IFactoryCallback} from "src/interfaces/IFactoryCallback.sol";
 import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
 
-contract Proxy is MultiSendCallOnly {
+contract Proxy {
     bytes32 internal immutable initCodeHash;
     address internal immutable deployer;
     address internal pluginLogic;
@@ -55,29 +55,17 @@ contract Proxy is MultiSendCallOnly {
         pluginLogic = _pluginLogic;
     }
 
-    function multiSend(bytes memory transactions)
-        public
-        payable
-        override
-        onlyOwner
-    {
-        super.multiSend(transactions);
+    function multiSend(bytes memory transactions) external payable onlyOwner {
+        MultiSendCallOnly.multiSend(transactions);
     }
 }
 
 contract ProxyDeployer is IFactoryCallback {
-    bytes32 internal immutable proxyInitCodeHash;
+    bytes32 public immutable initCodeHash = keccak256(type(Proxy).creationCode);
+    event ProxyCreated(address indexed user, address indexed proxy);
 
-    constructor() {
-        proxyInitCodeHash = keccak256(type(Proxy).creationCode);
-    }
-
-    function createProxy(address user) external returns (address) {
+    function createProxy(address user) external {
         address proxy = address(new Proxy{salt: keccak256(abi.encode(user))}());
-        return proxy;
-    }
-
-    function initCodeHash() external view returns (bytes32) {
-        return proxyInitCodeHash;
+        emit ProxyCreated(user, proxy);
     }
 }
