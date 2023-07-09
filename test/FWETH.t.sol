@@ -4,11 +4,11 @@ pragma solidity ^0.8.13;
 import {Test} from "forge-std/Test.sol";
 import {Proxy, IFactoryCallback} from "src/Proxy.sol";
 import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
-import {ForkedWETH9} from "test/examples/ForkedWETH.sol";
+import {FWETH} from "test/examples/FWETH.sol";
 
-contract ForkedWETHTest is EncodeTxs, IFactoryCallback, Test {
+contract FWETHTest is EncodeTxs, IFactoryCallback, Test {
     Proxy internal proxy;
-    ForkedWETH9 internal weth;
+    FWETH internal weth;
     bytes32 internal _initCodeHash;
     address internal owner;
     Transaction[] internal txs;
@@ -23,7 +23,7 @@ contract ForkedWETHTest is EncodeTxs, IFactoryCallback, Test {
 
     function setUp() public {
         owner = address(2);
-        weth = new ForkedWETH9(address(this));
+        weth = new FWETH(address(this));
     }
 
     function test_ExecuteMultisendWithWETh() public {

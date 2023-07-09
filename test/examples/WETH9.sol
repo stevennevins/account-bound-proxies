@@ -12,17 +12,12 @@
 
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 pragma solidity ^0.8.13;
 
-import {ProxyVerify} from "test/examples/lib/ProxyVerify.sol";
-
-/// @notice Forked WETH9 with support for account bound proxies
-contract ForkedWETH9 {
+contract WETH9 {
     string public name = "Wrapped Ether";
     string public symbol = "WETH";
     uint8 public decimals = 18;
-    address public userProxyDeployer;
 
     event Approval(address indexed src, address indexed guy, uint256 wad);
     event Transfer(address indexed src, address indexed dst, uint256 wad);
@@ -33,40 +28,19 @@ contract ForkedWETH9 {
     mapping(address => mapping(address => uint256)) public allowance;
 
     fallback() external payable {
-        depositTo(msg.sender);
+        deposit();
     }
 
-    receive() external payable {
-        depositTo(msg.sender);
+    function deposit() public payable {
+        balanceOf[msg.sender] += msg.value;
+        emit Deposit(msg.sender, msg.value);
     }
 
-    constructor(address _userProxyDeployer) {
-        userProxyDeployer = _userProxyDeployer;
-    }
-
-    function depositTo(address to) public payable {
-        balanceOf[to] += msg.value;
-        emit Deposit(to, msg.value);
-    }
-
-    function withdrawFrom(
-        address from,
-        uint256 wad,
-        address to
-    ) public {
-        require(balanceOf[from] >= wad);
-        if (
-            from != msg.sender &&
-            allowance[from][msg.sender] != type(uint256).max &&
-            !ProxyVerify.proveOwnerOf(msg.sender, from, userProxyDeployer)
-        ) {
-            require(allowance[from][msg.sender] >= wad);
-            allowance[from][msg.sender] -= wad;
-        }
-
-        balanceOf[from] -= wad;
-        payable(to).transfer(wad);
-        emit Withdrawal(from, wad);
+    function withdraw(uint256 wad) public {
+        require(balanceOf[msg.sender] >= wad);
+        balanceOf[msg.sender] -= wad;
+        payable(msg.sender).transfer(wad);
+        emit Withdrawal(msg.sender, wad);
     }
 
     function totalSupply() public view returns (uint256) {
@@ -91,9 +65,7 @@ contract ForkedWETH9 {
         require(balanceOf[src] >= wad);
 
         if (
-            src != msg.sender &&
-            allowance[src][msg.sender] != type(uint256).max &&
-            !ProxyVerify.proveOwnerOf(msg.sender, src, userProxyDeployer)
+            src != msg.sender && allowance[src][msg.sender] != type(uint256).max
         ) {
             require(allowance[src][msg.sender] >= wad);
             allowance[src][msg.sender] -= wad;
