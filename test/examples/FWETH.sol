@@ -57,8 +57,7 @@ contract FWETH {
         require(balanceOf[from] >= wad);
         if (
             from != msg.sender &&
-            allowance[from][msg.sender] != type(uint256).max &&
-            !ProxyVerify.proveOwnerOf(msg.sender, from, userProxyDeployer)
+            allowance[from][msg.sender] != type(uint256).max
         ) {
             require(allowance[from][msg.sender] >= wad);
             allowance[from][msg.sender] -= wad;
@@ -89,11 +88,8 @@ contract FWETH {
         uint256 wad
     ) public returns (bool) {
         require(balanceOf[src] >= wad);
-
         if (
-            src != msg.sender &&
-            allowance[src][msg.sender] != type(uint256).max &&
-            !ProxyVerify.proveOwnerOf(msg.sender, src, userProxyDeployer)
+            src != msg.sender && allowance[src][msg.sender] != type(uint256).max
         ) {
             require(allowance[src][msg.sender] >= wad);
             allowance[src][msg.sender] -= wad;
