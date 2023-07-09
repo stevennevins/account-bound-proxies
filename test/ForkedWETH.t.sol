@@ -2,23 +2,23 @@
 pragma solidity ^0.8.13;
 
 import {Test} from "forge-std/Test.sol";
-import {Proxy, ICallbackParams} from "src/Proxy.sol";
+import {Proxy, IFactoryCallback} from "src/Proxy.sol";
 import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 import {ForkedWETH9} from "test/examples/ForkedWETH.sol";
 
-contract ProxyTest is EncodeTxs, ICallbackParams, Test {
+contract ForkedWETHTest is EncodeTxs, IFactoryCallback, Test {
     Proxy internal proxy;
     ForkedWETH9 internal weth;
-    bytes32 internal immutable initCodeHash;
+    bytes32 internal _initCodeHash;
     address internal owner;
     Transaction[] internal txs;
 
-    function params() external view returns (address, bytes32) {
-        return (owner, initCodeHash);
+    function initCodeHash() external view returns (bytes32) {
+        return _initCodeHash;
     }
 
     constructor() {
-        initCodeHash = keccak256(type(Proxy).creationCode);
+        _initCodeHash = keccak256(type(Proxy).creationCode);
     }
 
     function setUp() public {

@@ -2,36 +2,28 @@
 pragma solidity ^0.8.13;
 
 import {MultiSendCallOnly} from "src/MultiSendCallOnly.sol";
+import {IFactoryCallback} from "src/interfaces/IFactoryCallback.sol";
 import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
 
-// https://github.com/Uniswap/v3-core/blob/main/contracts/UniswapV3PoolDeployer.sol
-// https://github.com/Uniswap/v3-periphery/blob/main/contracts/libraries/PoolAddress.sol
-// js lib base compatability on https://github.com/gnosis/ethers-multisend
-interface ICallbackParams {
-    function params() external returns (address, bytes32);
-}
-
 contract Proxy is MultiSendCallOnly {
-    /// this will eventually just be a constant
     bytes32 internal immutable initCodeHash;
     address internal immutable deployer;
     address internal pluginLogic;
     error NotOwner();
 
     modifier onlyOwner() {
-        if (
-            address(this) !=
-            Create2.computeAddress(
-                keccak256(abi.encode(msg.sender)),
-                initCodeHash,
-                deployer
-            )
-        ) revert NotOwner();
+        address userProxy = Create2.computeAddress(
+            keccak256(abi.encode(msg.sender)),
+            initCodeHash,
+            deployer
+        );
+        if (address(this) != userProxy) revert NotOwner();
         _;
     }
 
     constructor() {
-        (, bytes32 _initCodeHash) = ICallbackParams(msg.sender).params();
+        /// @dev workaround for circular reference
+        bytes32 _initCodeHash = IFactoryCallback(msg.sender).initCodeHash();
         initCodeHash = _initCodeHash;
         deployer = msg.sender;
     }
@@ -41,11 +33,11 @@ contract Proxy is MultiSendCallOnly {
 
     // solhint-disable-next-line
     fallback() external payable {
-        address _impl = pluginLogic;
+        address logic = pluginLogic;
         assembly {
             let ptr := mload(0x40)
             calldatacopy(ptr, 0, calldatasize())
-            let result := delegatecall(gas(), _impl, ptr, calldatasize(), 0, 0)
+            let result := delegatecall(gas(), logic, ptr, calldatasize(), 0, 0)
             let size := returndatasize()
             returndatacopy(ptr, 0, size)
 
@@ -63,7 +55,6 @@ contract Proxy is MultiSendCallOnly {
         pluginLogic = _pluginLogic;
     }
 
-    /// TODO see if this should be called execTransaction for better compatibility with safe libs
     function multiSend(bytes memory transactions)
         public
         payable
@@ -74,22 +65,19 @@ contract Proxy is MultiSendCallOnly {
     }
 }
 
-contract ProxyDeployer {
+contract ProxyDeployer is IFactoryCallback {
     bytes32 internal immutable proxyInitCodeHash;
-    address internal owner;
 
     constructor() {
         proxyInitCodeHash = keccak256(type(Proxy).creationCode);
     }
 
     function createProxy(address user) external returns (address) {
-        owner = user;
         address proxy = address(new Proxy{salt: keccak256(abi.encode(user))}());
-        delete owner;
         return proxy;
     }
 
-    function params() external view returns (address, bytes32) {
-        return (owner, proxyInitCodeHash);
+    function initCodeHash() external view returns (bytes32) {
+        return proxyInitCodeHash;
     }
 }
