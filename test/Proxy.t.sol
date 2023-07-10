@@ -7,17 +7,9 @@ import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 
 contract ProxyTest is EncodeTxs, IFactoryCallback, Test {
     Proxy internal proxy;
-    bytes32 public immutable initCodeHash;
-    address public cachedUser;
+    bytes32 public immutable initCodeHash = keccak256(type(Proxy).creationCode);
+    address public cachedUser = address(2);
     Transaction[] internal txs;
-
-    constructor() {
-        initCodeHash = keccak256(type(Proxy).creationCode);
-    }
-
-    function setUp() public {
-        cachedUser = address(2);
-    }
 
     function test_cachedUser() public {
         bytes32 salt = keccak256(abi.encode(cachedUser));

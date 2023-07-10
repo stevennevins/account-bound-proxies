@@ -2,40 +2,26 @@
 pragma solidity ^0.8.13;
 
 import {Test} from "forge-std/Test.sol";
-import {IERC20} from "forge-std/interfaces/IERC20.sol";
 import {Proxy, ProxyFactory} from "src/Proxy.sol";
 import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 import {FWETH} from "test/examples/FWETH.sol";
 import {WETH9} from "test/examples/WETH9.sol";
 import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
-
-contract MockPullWETH {
-    address internal weth;
-
-    constructor(address _wethLike) {
-        weth = _wethLike;
-    }
-
-    function depositWETH(uint256 amount) external {
-        IERC20(weth).transferFrom(msg.sender, address(this), amount);
-    }
-}
+import {MockPullWETH} from "test/examples/mocks/MockPullWETH.sol";
 
 contract FWETHTest is EncodeTxs, Test {
-    MockPullWETH internal puller;
-    Proxy internal proxy;
-    ProxyFactory internal factory;
-    FWETH internal fweth;
-    WETH9 internal weth9;
+    ProxyFactory internal factory = new ProxyFactory();
+    WETH9 internal weth9 = new WETH9();
     address internal owner = address(2);
+    FWETH internal fweth;
     Transaction[] internal txs;
+    Proxy internal proxy;
+    MockPullWETH internal puller;
 
     function setUp() public {
-        factory = new ProxyFactory();
         factory.createProxy(owner);
         proxy = Proxy(payable(getProxyAddress(owner)));
         fweth = new FWETH(address(factory));
-        weth9 = new WETH9();
     }
 
     function test_EOA_WETH9() public {
