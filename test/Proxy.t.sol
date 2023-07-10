@@ -7,16 +7,12 @@ import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 
 contract ProxyTest is EncodeTxs, IFactoryCallback, Test {
     Proxy internal proxy;
-    bytes32 internal immutable _initCodeHash;
-    address internal owner;
+    bytes32 public immutable initCodeHash;
+    address public owner;
     Transaction[] internal txs;
 
-    function initCodeHash() external view returns (bytes32) {
-        return _initCodeHash;
-    }
-
     constructor() {
-        _initCodeHash = keccak256(type(Proxy).creationCode);
+        initCodeHash = keccak256(type(Proxy).creationCode);
     }
 
     function setUp() public {
@@ -66,7 +62,7 @@ contract ProxyTest is EncodeTxs, IFactoryCallback, Test {
             Transaction(
                 address(this),
                 0,
-                abi.encodeCall(IFactoryCallback.initCodeHash, ()),
+                abi.encodeCall(IFactoryCallback.owner, ()),
                 Operation.Call
             )
         );

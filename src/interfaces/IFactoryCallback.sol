@@ -2,5 +2,5 @@
 pragma solidity ^0.8.13;
 
 interface IFactoryCallback {
-    function initCodeHash() external returns (bytes32);
+    function owner() external returns (address);
 }
