@@ -2,7 +2,8 @@
 pragma solidity ^0.8.13;
 
 import {Test} from "forge-std/Test.sol";
-import {Proxy, ProxyFactory} from "src/Proxy.sol";
+import {Proxy} from "src/Proxy.sol";
+import {ProxyFactory} from "src/ProxyFactory.sol";
 import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 import {FWETH} from "test/examples/FWETH.sol";
 import {WETH9} from "test/examples/WETH9.sol";

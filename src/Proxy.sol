@@ -49,15 +49,3 @@ contract Proxy {
         MultiSendCallOnly.multiSend(transactions);
     }
 }
-
-contract ProxyFactory is IFactoryCallback {
-    bytes32 public immutable initCodeHash = keccak256(type(Proxy).creationCode);
-    address public cachedUser;
-    event ProxyCreated(address indexed user, address indexed proxy);
-
-    function createProxy(address user) external {
-        cachedUser = user;
-        address proxy = address(new Proxy{salt: keccak256(abi.encode(user))}());
-        emit ProxyCreated(user, proxy);
-    }
-}
