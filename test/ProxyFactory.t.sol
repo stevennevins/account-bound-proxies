@@ -11,4 +11,10 @@ contract ProxyFactoryTest is Test {
     function test_deployProxy() public {
         deployer.createProxy(owner);
     }
+
+    function test_RevertsWhenSameOwner_deployProxy() public {
+        deployer.createProxy(owner);
+        vm.expectRevert();
+        deployer.createProxy(owner);
+    }
 }
