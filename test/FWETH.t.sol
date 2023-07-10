@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import {Test} from "forge-std/Test.sol";
 import {IERC20} from "forge-std/interfaces/IERC20.sol";
-import {Proxy, ProxyDeployer} from "src/Proxy.sol";
+import {Proxy, ProxyFactory} from "src/Proxy.sol";
 import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 import {FWETH} from "test/examples/FWETH.sol";
 import {WETH9} from "test/examples/WETH9.sol";
@@ -24,17 +24,17 @@ contract MockPullWETH {
 contract FWETHTest is EncodeTxs, Test {
     MockPullWETH internal puller;
     Proxy internal proxy;
-    ProxyDeployer internal deployer;
+    ProxyFactory internal factory;
     FWETH internal fweth;
     WETH9 internal weth9;
     address internal owner = address(2);
     Transaction[] internal txs;
 
     function setUp() public {
-        deployer = new ProxyDeployer();
-        deployer.createProxy(owner);
+        factory = new ProxyFactory();
+        factory.createProxy(owner);
         proxy = Proxy(payable(getProxyAddress(owner)));
-        fweth = new FWETH(address(deployer));
+        fweth = new FWETH(address(factory));
         weth9 = new WETH9();
     }
 
@@ -131,8 +131,8 @@ contract FWETHTest is EncodeTxs, Test {
     function getProxyAddress(address _user) internal view returns (address) {
         address userProxy = Create2.computeAddress(
             keccak256(abi.encode(_user)),
-            deployer.initCodeHash(),
-            address(deployer)
+            factory.initCodeHash(),
+            address(factory)
         );
         require(userProxy.code.length > 0, "no code");
         return userProxy;

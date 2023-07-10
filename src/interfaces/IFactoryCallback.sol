@@ -2,5 +2,5 @@
 pragma solidity ^0.8.13;
 
 interface IFactoryCallback {
-    function owner() external returns (address);
+    function cachedUser() external returns (address);
 }

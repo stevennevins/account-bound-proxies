@@ -3,7 +3,6 @@ pragma solidity ^0.8.13;
 
 import {MultiSendCallOnly} from "src/MultiSendCallOnly.sol";
 import {IFactoryCallback} from "src/interfaces/IFactoryCallback.sol";
-import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
 
 contract Proxy {
     address internal immutable owner;
@@ -16,7 +15,7 @@ contract Proxy {
     }
 
     constructor() {
-        owner = IFactoryCallback(msg.sender).owner();
+        owner = IFactoryCallback(msg.sender).cachedUser();
     }
 
     // solhint-disable-next-line
@@ -51,13 +50,13 @@ contract Proxy {
     }
 }
 
-contract ProxyDeployer is IFactoryCallback {
+contract ProxyFactory is IFactoryCallback {
     bytes32 public immutable initCodeHash = keccak256(type(Proxy).creationCode);
-    address public owner;
+    address public cachedUser;
     event ProxyCreated(address indexed user, address indexed proxy);
 
     function createProxy(address user) external {
-        owner = user;
+        cachedUser = user;
         address proxy = address(new Proxy{salt: keccak256(abi.encode(user))}());
         emit ProxyCreated(user, proxy);
     }

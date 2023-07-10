@@ -8,7 +8,7 @@ import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 contract ProxyTest is EncodeTxs, IFactoryCallback, Test {
     Proxy internal proxy;
     bytes32 public immutable initCodeHash;
-    address public owner;
+    address public cachedUser;
     Transaction[] internal txs;
 
     constructor() {
@@ -16,18 +16,18 @@ contract ProxyTest is EncodeTxs, IFactoryCallback, Test {
     }
 
     function setUp() public {
-        owner = address(2);
+        cachedUser = address(2);
     }
 
-    function test_Owner() public {
-        bytes32 salt = keccak256(abi.encode(owner));
+    function test_cachedUser() public {
+        bytes32 salt = keccak256(abi.encode(cachedUser));
         proxy = new Proxy{salt: salt}();
-        vm.prank(owner);
+        vm.prank(cachedUser);
         proxy.multiSend("");
     }
 
-    function test_RevertsWhenNotOwner() public {
-        bytes32 salt = keccak256(abi.encode(owner));
+    function test_RevertsWhenNotcachedUser() public {
+        bytes32 salt = keccak256(abi.encode(cachedUser));
         proxy = new Proxy{salt: salt}();
         vm.prank(address(3));
         vm.expectRevert();
@@ -35,38 +35,38 @@ contract ProxyTest is EncodeTxs, IFactoryCallback, Test {
     }
 
     function test_ExecuteTransfer() public {
-        bytes32 salt = keccak256(abi.encode(owner));
+        bytes32 salt = keccak256(abi.encode(cachedUser));
         proxy = new Proxy{salt: salt}();
-        vm.deal(owner, 1 ether);
+        vm.deal(cachedUser, 1 ether);
         txs.push(Transaction(address(4), 1, hex"", Operation.Call));
-        vm.prank(owner);
+        vm.prank(cachedUser);
         proxy.multiSend{value: 1}(encode(txs));
         assertEq(address(4).balance, 1);
     }
 
     function test_ExecuteMultipleTransfer() public {
-        bytes32 salt = keccak256(abi.encode(owner));
+        bytes32 salt = keccak256(abi.encode(cachedUser));
         proxy = new Proxy{salt: salt}();
-        vm.deal(owner, 1 ether);
+        vm.deal(cachedUser, 1 ether);
         txs.push(Transaction(address(4), 1, hex"", Operation.Call));
         txs.push(Transaction(address(4), 1, hex"", Operation.Call));
-        vm.prank(owner);
+        vm.prank(cachedUser);
         proxy.multiSend{value: 2}(encode(txs));
         assertEq(address(4).balance, 2);
     }
 
     function test_EncodedCall() public {
-        bytes32 salt = keccak256(abi.encode(owner));
+        bytes32 salt = keccak256(abi.encode(cachedUser));
         proxy = new Proxy{salt: salt}();
         txs.push(
             Transaction(
                 address(this),
                 0,
-                abi.encodeCall(IFactoryCallback.owner, ()),
+                abi.encodeCall(IFactoryCallback.cachedUser, ()),
                 Operation.Call
             )
         );
-        vm.prank(owner);
+        vm.prank(cachedUser);
         proxy.multiSend(encode(txs));
     }
 }
