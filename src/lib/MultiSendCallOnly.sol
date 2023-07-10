@@ -3,12 +3,12 @@ pragma solidity >=0.7.0 <0.9.0;
 
 /**
  * @title Multi Send Call Only - Allows to batch multiple transactions into one, but only calls
+ * @notice modified from safe-contracts repo
  * @notice The guard logic is not required here as this contract doesn't support nested delegate calls
  * @author Stefan George - @Georgi87
  * @author Richard Meissner - @rmeissner
  */
-/// modified from safe-contracts repo
-/// might want to make this a library if possible
+
 library MultiSendCallOnly {
     /**
      * @dev Sends multiple transactions and reverts all if one fails.

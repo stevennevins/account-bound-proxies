@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import {MultiSendCallOnly} from "src/MultiSendCallOnly.sol";
+import {MultiSendCallOnly} from "src/lib/MultiSendCallOnly.sol";
 import {IFactoryCallback} from "src/interfaces/IFactoryCallback.sol";
 
 contract Proxy {
