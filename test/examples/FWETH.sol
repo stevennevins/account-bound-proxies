@@ -15,14 +15,14 @@
 
 pragma solidity ^0.8.13;
 
-import {ProxyVerify} from "test/examples/lib/ProxyVerify.sol";
+import {RouterVerify} from "test/examples/lib/RouterVerify.sol";
 
 /// @notice Forked WETH9 with support for account bound proxies
 contract FWETH {
     string public name = "Wrapped Ether";
     string public symbol = "WETH";
     uint8 public decimals = 18;
-    address public userProxyDeployer;
+    address public routerRegistry;
 
     event Approval(address indexed src, address indexed guy, uint256 wad);
     event Transfer(address indexed src, address indexed dst, uint256 wad);
@@ -40,8 +40,8 @@ contract FWETH {
         depositTo(msg.sender);
     }
 
-    constructor(address _userProxyDeployer) {
-        userProxyDeployer = _userProxyDeployer;
+    constructor(address _routerRegistry) {
+        routerRegistry = _routerRegistry;
     }
 
     function depositTo(address to) public payable {

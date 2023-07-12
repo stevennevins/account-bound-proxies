@@ -2,8 +2,8 @@
 pragma solidity ^0.8.13;
 
 import {Test} from "forge-std/Test.sol";
-import {ProxyMultiSender} from "src/ProxyMultiSender.sol";
-import {ProxyFactory} from "src/ProxyFactory.sol";
+import {Router} from "src/Router.sol";
+import {RouterRegistry} from "src/RouterRegistry.sol";
 import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 import {FWETH} from "test/examples/FWETH.sol";
 import {WETH9} from "test/examples/WETH9.sol";
@@ -11,18 +11,18 @@ import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
 import {MockPullWETH} from "test/examples/mocks/MockPullWETH.sol";
 
 contract FWETHTest is EncodeTxs, Test {
-    ProxyFactory internal factory = new ProxyFactory();
+    RouterRegistry internal registry = new RouterRegistry();
     WETH9 internal weth9 = new WETH9();
     address internal owner = address(2);
     FWETH internal fweth;
     Transaction[] internal txs;
-    ProxyMultiSender internal proxy;
+    Router internal router;
     MockPullWETH internal puller;
 
     function setUp() public {
-        factory.createProxy(owner);
-        proxy = ProxyMultiSender(payable(getProxyAddress(owner)));
-        fweth = new FWETH(address(factory));
+        registry.createRouter(owner);
+        router = Router(payable(getRouterAddress(owner)));
+        fweth = new FWETH(address(registry));
     }
 
     function test_EOA_WETH9() public {
@@ -67,7 +67,7 @@ contract FWETHTest is EncodeTxs, Test {
 
         vm.deal(owner, 1 ether);
         vm.prank(owner);
-        proxy.multiSend{value: 1 ether}(encode(txs));
+        router.multiSend{value: 1 ether}(encode(txs));
     }
 
     function test_EOA_FWETH() public {
@@ -86,7 +86,7 @@ contract FWETHTest is EncodeTxs, Test {
             Transaction(
                 address(fweth),
                 1 ether,
-                abi.encodeCall(FWETH.depositTo, (address(proxy))),
+                abi.encodeCall(FWETH.depositTo, (address(router))),
                 Operation.Call
             )
         );
@@ -112,16 +112,16 @@ contract FWETHTest is EncodeTxs, Test {
 
         vm.deal(owner, 1 ether);
         vm.prank(owner);
-        proxy.multiSend{value: 1 ether}(encode(txs));
+        router.multiSend{value: 1 ether}(encode(txs));
     }
 
-    function getProxyAddress(address _user) internal view returns (address) {
-        address userProxy = Create2.computeAddress(
+    function getRouterAddress(address _user) internal view returns (address) {
+        address userRouter = Create2.computeAddress(
             keccak256(abi.encode(_user)),
-            factory.INIT_CODE_HASH(),
-            address(factory)
+            registry.INIT_CODE_HASH(),
+            address(registry)
         );
-        require(userProxy.code.length > 0, "no code");
-        return userProxy;
+        require(userRouter.code.length > 0, "no code");
+        return userRouter;
     }
 }

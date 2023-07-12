@@ -2,19 +2,19 @@
 pragma solidity ^0.8.13;
 
 import {Test} from "forge-std/Test.sol";
-import {ProxyFactory} from "src/ProxyFactory.sol";
+import {RouterRegistry} from "src/RouterRegistry.sol";
 
-contract ProxyFactoryTest is Test {
-    ProxyFactory internal deployer = new ProxyFactory();
+contract RouterRegistryTest is Test {
+    RouterRegistry internal deployer = new RouterRegistry();
     address owner = address(2);
 
     function test_deployProxy() public {
-        deployer.createProxy(owner);
+        deployer.createRouter(owner);
     }
 
     function test_RevertsWhenSameOwner_deployProxy() public {
-        deployer.createProxy(owner);
+        deployer.createRouter(owner);
         vm.expectRevert();
-        deployer.createProxy(owner);
+        deployer.createRouter(owner);
     }
 }

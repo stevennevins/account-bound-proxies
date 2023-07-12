@@ -2,9 +2,9 @@
 pragma solidity ^0.8.13;
 
 import {MultiSendCallOnly} from "src/lib/MultiSendCallOnly.sol";
-import {IFactoryCallback} from "src/interfaces/IFactoryCallback.sol";
+import {IRegistryCallback} from "src/interfaces/IRegistryCallback.sol";
 
-contract ProxyMultiSender {
+contract Router {
     address public immutable owner;
     address internal pluginLogic;
     error NotOwner();
@@ -15,7 +15,7 @@ contract ProxyMultiSender {
     }
 
     constructor() {
-        owner = IFactoryCallback(msg.sender).cachedUser();
+        owner = IRegistryCallback(msg.sender).cachedUser();
     }
 
     // solhint-disable-next-line
