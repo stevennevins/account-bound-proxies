@@ -2,25 +2,26 @@
 pragma solidity ^0.8.13;
 
 import {Test} from "forge-std/Test.sol";
-import {Proxy, IFactoryCallback} from "src/Proxy.sol";
+import {ProxyMultiSender, IFactoryCallback} from "src/ProxyMultiSender.sol";
 import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 
-contract ProxyTest is EncodeTxs, IFactoryCallback, Test {
-    Proxy internal proxy;
-    bytes32 public immutable initCodeHash = keccak256(type(Proxy).creationCode);
+contract ProxyMultiSenderTest is EncodeTxs, IFactoryCallback, Test {
+    ProxyMultiSender internal proxy;
+    bytes32 public immutable initCodeHash =
+        keccak256(type(ProxyMultiSender).creationCode);
     address public cachedUser = address(2);
     Transaction[] internal txs;
 
     function test_cachedUser() public {
         bytes32 salt = keccak256(abi.encode(cachedUser));
-        proxy = new Proxy{salt: salt}();
+        proxy = new ProxyMultiSender{salt: salt}();
         vm.prank(cachedUser);
         proxy.multiSend("");
     }
 
     function test_RevertsWhenNotcachedUser() public {
         bytes32 salt = keccak256(abi.encode(cachedUser));
-        proxy = new Proxy{salt: salt}();
+        proxy = new ProxyMultiSender{salt: salt}();
         vm.prank(address(3));
         vm.expectRevert();
         proxy.multiSend("");
@@ -28,7 +29,7 @@ contract ProxyTest is EncodeTxs, IFactoryCallback, Test {
 
     function test_ExecuteTransfer() public {
         bytes32 salt = keccak256(abi.encode(cachedUser));
-        proxy = new Proxy{salt: salt}();
+        proxy = new ProxyMultiSender{salt: salt}();
         vm.deal(cachedUser, 1 ether);
         txs.push(Transaction(address(4), 1, hex"", Operation.Call));
         vm.prank(cachedUser);
@@ -38,7 +39,7 @@ contract ProxyTest is EncodeTxs, IFactoryCallback, Test {
 
     function test_ExecuteMultipleTransfer() public {
         bytes32 salt = keccak256(abi.encode(cachedUser));
-        proxy = new Proxy{salt: salt}();
+        proxy = new ProxyMultiSender{salt: salt}();
         vm.deal(cachedUser, 1 ether);
         txs.push(Transaction(address(4), 1, hex"", Operation.Call));
         txs.push(Transaction(address(4), 1, hex"", Operation.Call));
@@ -49,7 +50,7 @@ contract ProxyTest is EncodeTxs, IFactoryCallback, Test {
 
     function test_EncodedCall() public {
         bytes32 salt = keccak256(abi.encode(cachedUser));
-        proxy = new Proxy{salt: salt}();
+        proxy = new ProxyMultiSender{salt: salt}();
         txs.push(
             Transaction(
                 address(this),

@@ -28,7 +28,7 @@ contract ProxyVerifierTest is Test {
     function getProxyAddress(address _user) internal view returns (address) {
         address userProxy = Create2.computeAddress(
             keccak256(abi.encode(_user)),
-            factory.initCodeHash(),
+            factory.INIT_CODE_HASH(),
             address(factory)
         );
         require(userProxy.code.length > 0, "no code");

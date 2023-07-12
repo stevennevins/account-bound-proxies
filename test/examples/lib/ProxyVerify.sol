@@ -2,10 +2,11 @@
 pragma solidity ^0.8.13;
 
 import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
-import {Proxy} from "src/Proxy.sol";
+import {ProxyMultiSender} from "src/ProxyMultiSender.sol";
 
 library ProxyVerify {
-    bytes32 public constant initCodeHash = keccak256(type(Proxy).creationCode);
+    bytes32 public constant initCodeHash =
+        keccak256(type(ProxyMultiSender).creationCode);
 
     function proveOwnerOf(
         address proxy,

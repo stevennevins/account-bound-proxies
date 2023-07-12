@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Test} from "forge-std/Test.sol";
-import {Proxy} from "src/Proxy.sol";
+import {ProxyMultiSender} from "src/ProxyMultiSender.sol";
 import {ProxyFactory} from "src/ProxyFactory.sol";
 import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 import {FWETH} from "test/examples/FWETH.sol";
@@ -16,12 +16,12 @@ contract FWETHTest is EncodeTxs, Test {
     address internal owner = address(2);
     FWETH internal fweth;
     Transaction[] internal txs;
-    Proxy internal proxy;
+    ProxyMultiSender internal proxy;
     MockPullWETH internal puller;
 
     function setUp() public {
         factory.createProxy(owner);
-        proxy = Proxy(payable(getProxyAddress(owner)));
+        proxy = ProxyMultiSender(payable(getProxyAddress(owner)));
         fweth = new FWETH(address(factory));
     }
 
@@ -118,7 +118,7 @@ contract FWETHTest is EncodeTxs, Test {
     function getProxyAddress(address _user) internal view returns (address) {
         address userProxy = Create2.computeAddress(
             keccak256(abi.encode(_user)),
-            factory.initCodeHash(),
+            factory.INIT_CODE_HASH(),
             address(factory)
         );
         require(userProxy.code.length > 0, "no code");
