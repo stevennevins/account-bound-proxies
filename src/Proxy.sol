@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
 import {MultiSendCallOnly} from "src/lib/MultiSendCallOnly.sol";
 import {IFactoryCallback} from "src/interfaces/IFactoryCallback.sol";
 
 contract Proxy {
-    address internal immutable owner;
+    address public immutable owner;
     address internal pluginLogic;
     error NotOwner();
 
