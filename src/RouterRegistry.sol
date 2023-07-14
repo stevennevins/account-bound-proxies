@@ -15,34 +15,35 @@ contract RouterRegistry is IRegistryCallback {
     error RouterExists();
 
     function createRouter(address user) external {
-        if (
-            Create2
-                .computeAddress(
-                    keccak256(abi.encode(user)),
-                    INIT_CODE_HASH,
-                    address(this)
-                )
-                .code
-                .length != 0
-        ) revert RouterExists();
-
+        address router = _predictRouterAddress(keccak256(abi.encode(user)));
+        if (router.code.length != 0) revert RouterExists();
         cachedUser = user;
-        emit RouterCreated(
-            user,
-            address(new Router{salt: keccak256(abi.encode(user))}())
-        );
+        emit RouterCreated(user, router);
+        new Router{salt: keccak256(abi.encode(user))}();
+    }
+
+    function routerExistsFor(address user) external view returns (bool) {
+        address router = _predictRouterAddress(keccak256(abi.encode(user)));
+        if (router.code.length == 0) return false;
+        return true;
+    }
+
+    function routerFor(address user) external view returns (address) {
+        return _predictRouterAddress(keccak256(abi.encode(user)));
     }
 
     function ownerOf(address router) external view returns (address) {
         address routerOwner = IOwner(router).owner();
-        if (
-            router !=
-            Create2.computeAddress(
-                keccak256(abi.encode(routerOwner)),
-                INIT_CODE_HASH,
-                address(this)
-            )
-        ) revert NotOwner();
+        if (router != _predictRouterAddress(keccak256(abi.encode(routerOwner))))
+            revert NotOwner();
         return routerOwner;
+    }
+
+    function _predictRouterAddress(bytes32 salt)
+        internal
+        view
+        returns (address)
+    {
+        return Create2.computeAddress(salt, INIT_CODE_HASH, address(this));
     }
 }
