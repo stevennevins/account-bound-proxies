@@ -12,8 +12,20 @@ contract RouterRegistry is IRegistryCallback {
     address public cachedUser;
     event RouterCreated(address indexed user, address indexed router);
     error NotOwner();
+    error RouterExists();
 
     function createRouter(address user) external {
+        if (
+            Create2
+                .computeAddress(
+                    keccak256(abi.encode(user)),
+                    INIT_CODE_HASH,
+                    address(this)
+                )
+                .code
+                .length != 0
+        ) revert RouterExists();
+
         cachedUser = user;
         emit RouterCreated(
             user,
