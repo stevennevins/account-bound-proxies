@@ -3,6 +3,7 @@ pragma solidity ^0.8.13;
 
 import {Router} from "src/Router.sol";
 import {IRegistryCallback} from "src/interfaces/IRegistryCallback.sol";
+import {IOwner} from "src/interfaces/IOwner.sol";
 import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
 
 contract RouterRegistry is IRegistryCallback {
@@ -21,7 +22,7 @@ contract RouterRegistry is IRegistryCallback {
     }
 
     function ownerOf(address router) external view returns (address) {
-        address routerOwner = Router(payable(router)).owner();
+        address routerOwner = IOwner(router).owner();
         if (
             router !=
             Create2.computeAddress(

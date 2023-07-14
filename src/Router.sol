@@ -5,7 +5,7 @@ import {MultiSendCallOnly} from "src/lib/MultiSendCallOnly.sol";
 import {IRegistryCallback} from "src/interfaces/IRegistryCallback.sol";
 
 contract Router {
-    address public immutable owner;
+    address internal immutable owner;
     address internal pluginLogic;
     error NotOwner();
 
@@ -23,6 +23,14 @@ contract Router {
 
     // solhint-disable-next-line
     fallback() external payable {
+        if (msg.sig == bytes4(keccak256("owner()"))) {
+            address owner_ = owner;
+            assembly {
+                let result := owner_
+                mstore(0x0, result) // store result in memory
+                return(0x0, 20)
+            }
+        }
         address logic = pluginLogic;
         assembly {
             let ptr := mload(0x40)
