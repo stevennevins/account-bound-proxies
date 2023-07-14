@@ -17,4 +17,19 @@ contract RouterRegistryTest is Test {
         vm.expectRevert();
         deployer.createRouter(owner);
     }
+
+    function test_deployMultiGasCheck() public {
+        deployer.createRouter(owner);
+        deployer.createRouter(address(100));
+        deployer.createRouter(address(101));
+        deployer.createRouter(address(102));
+        deployer.createRouter(address(103));
+        deployer.createRouter(address(104));
+        deployer.createRouter(address(105));
+        deployer.createRouter(address(106));
+        deployer.createRouter(address(107));
+        deployer.createRouter(address(108));
+        deployer.createRouter(address(109));
+        deployer.createRouter(address(110));
+    }
 }

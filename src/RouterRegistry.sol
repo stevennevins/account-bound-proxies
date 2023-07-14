@@ -15,10 +15,10 @@ contract RouterRegistry is IRegistryCallback {
 
     function createRouter(address user) external {
         cachedUser = user;
-        address router = address(
-            new Router{salt: keccak256(abi.encode(user))}()
+        emit RouterCreated(
+            user,
+            address(new Router{salt: keccak256(abi.encode(user))}())
         );
-        emit RouterCreated(user, router);
     }
 
     function ownerOf(address router) external view returns (address) {
