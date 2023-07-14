@@ -14,7 +14,7 @@ contract Router {
         _;
     }
 
-    constructor() {
+    constructor() payable {
         owner = IRegistryCallback(msg.sender).cachedUser();
     }
 
