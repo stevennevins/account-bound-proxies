@@ -3,8 +3,9 @@ pragma solidity ^0.8.13;
 
 import {MultiSendCallOnly} from "src/lib/MultiSendCallOnly.sol";
 import {IRegistryCallback} from "src/interfaces/IRegistryCallback.sol";
+import {Proxy} from "openzeppelin-contracts/contracts/proxy/Proxy.sol";
 
-contract Router {
+contract Router is Proxy{
     address internal immutable owner;
     address internal pluginLogic;
     error NotOwner();
@@ -18,11 +19,16 @@ contract Router {
         owner = IRegistryCallback(msg.sender).cachedUser();
     }
 
-    // solhint-disable-next-line
-    receive() external payable {}
 
-    // solhint-disable-next-line
-    fallback() external payable {
+    function updatePluginLogic(address _pluginLogic) external onlyOwner {
+        pluginLogic = _pluginLogic;
+    }
+
+    function multiSend(bytes memory transactions) external payable onlyOwner {
+        MultiSendCallOnly.multiSend(transactions);
+    }
+
+    function _beforeFallback() internal view override {
         if (msg.sig == bytes4(keccak256("owner()"))) {
             address owner_ = owner;
             assembly {
@@ -31,29 +37,9 @@ contract Router {
                 return(0x0, 20)
             }
         }
-        address logic = pluginLogic;
-        assembly {
-            let ptr := mload(0x40)
-            calldatacopy(ptr, 0, calldatasize())
-            let result := delegatecall(gas(), logic, ptr, calldatasize(), 0, 0)
-            let size := returndatasize()
-            returndatacopy(ptr, 0, size)
-
-            switch result
-            case 0 {
-                revert(ptr, size)
-            }
-            default {
-                return(ptr, size)
-            }
-        }
     }
 
-    function updatePluginLogic(address _pluginLogic) external onlyOwner {
-        pluginLogic = _pluginLogic;
-    }
-
-    function multiSend(bytes memory transactions) external payable onlyOwner {
-        MultiSendCallOnly.multiSend(transactions);
+    function _implementation() internal view override returns (address ){
+        return pluginLogic;
     }
 }
