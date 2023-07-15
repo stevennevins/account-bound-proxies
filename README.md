@@ -1,5 +1,7 @@
 # Account Bound Routers
 
+The goal of this repository is to provide a system for creating and managing Router contracts for users, and executing multiple transactions in a single call. The Router contracts act as a proxy for executing multiple transactions by the owner and can be extended through the installation of plugin contracts that can be installed by a Router's owner.
+
 ## Router.sol
 
 The Router.sol is a smart contract that acts as a router and proxy for executing multiple transactions. It is designed to be owned by a single address and provides functionality to execute multiple transactions in a single call and to update the plugin logic address.
