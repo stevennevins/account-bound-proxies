@@ -7,17 +7,12 @@ import {Router} from "src/Router.sol";
 library RouterVerify {
     bytes32 public constant initCodeHash = keccak256(type(Router).creationCode);
 
-    function proveOwnerOf(
-        address router,
-        address owner,
-        address deployer
-    ) internal pure returns (bool) {
+    function proveOwnerOf(address router, address owner, address deployer)
+        internal
+        pure
+        returns (bool)
+    {
         return
-            router ==
-            Create2.computeAddress(
-                keccak256(abi.encode(owner)),
-                initCodeHash,
-                deployer
-            );
+            router == Create2.computeAddress(keccak256(abi.encode(owner)), initCodeHash, deployer);
     }
 }

@@ -7,8 +7,7 @@ import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 
 contract RouterTest is EncodeTxs, IRegistryCallback, Test {
     Router internal router;
-    bytes32 public immutable initCodeHash =
-        keccak256(type(Router).creationCode);
+    bytes32 public immutable initCodeHash = keccak256(type(Router).creationCode);
     address public cachedUser = address(2);
     Transaction[] internal txs;
 
@@ -53,10 +52,7 @@ contract RouterTest is EncodeTxs, IRegistryCallback, Test {
         router = new Router{salt: salt}();
         txs.push(
             Transaction(
-                address(this),
-                0,
-                abi.encodeCall(IRegistryCallback.cachedUser, ()),
-                Operation.Call
+                address(this), 0, abi.encodeCall(IRegistryCallback.cachedUser, ()), Operation.Call
             )
         );
         vm.prank(cachedUser);

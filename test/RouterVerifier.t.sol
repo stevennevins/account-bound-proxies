@@ -16,20 +16,12 @@ contract RouterVerifyTest is Test {
     }
 
     function test_Verify() public {
-        assertTrue(
-            RouterVerify.proveOwnerOf(
-                getRouterAddress(owner),
-                owner,
-                address(registry)
-            )
-        );
+        assertTrue(RouterVerify.proveOwnerOf(getRouterAddress(owner), owner, address(registry)));
     }
 
     function getRouterAddress(address _user) internal view returns (address) {
         address userRouter = Create2.computeAddress(
-            keccak256(abi.encode(_user)),
-            registry.INIT_CODE_HASH(),
-            address(registry)
+            keccak256(abi.encode(_user)), registry.INIT_CODE_HASH(), address(registry)
         );
         require(userRouter.code.length > 0, "no code");
         return userRouter;

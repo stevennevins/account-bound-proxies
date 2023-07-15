@@ -5,9 +5,5 @@ pragma solidity ^0.8.13;
 interface IForkedWETH {
     function depositTo(address) external payable;
 
-    function withdrawFrom(
-        address,
-        uint256,
-        address
-    ) external;
+    function withdrawFrom(address, uint256, address) external;
 }

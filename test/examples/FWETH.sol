@@ -49,16 +49,9 @@ contract FWETH {
         emit Deposit(to, msg.value);
     }
 
-    function withdrawFrom(
-        address from,
-        uint256 wad,
-        address to
-    ) public {
+    function withdrawFrom(address from, uint256 wad, address to) public {
         require(balanceOf[from] >= wad);
-        if (
-            from != msg.sender &&
-            allowance[from][msg.sender] != type(uint256).max
-        ) {
+        if (from != msg.sender && allowance[from][msg.sender] != type(uint256).max) {
             require(allowance[from][msg.sender] >= wad);
             allowance[from][msg.sender] -= wad;
         }
@@ -82,15 +75,9 @@ contract FWETH {
         return transferFrom(msg.sender, dst, wad);
     }
 
-    function transferFrom(
-        address src,
-        address dst,
-        uint256 wad
-    ) public returns (bool) {
+    function transferFrom(address src, address dst, uint256 wad) public returns (bool) {
         require(balanceOf[src] >= wad);
-        if (
-            src != msg.sender && allowance[src][msg.sender] != type(uint256).max
-        ) {
+        if (src != msg.sender && allowance[src][msg.sender] != type(uint256).max) {
             require(allowance[src][msg.sender] >= wad);
             allowance[src][msg.sender] -= wad;
         }

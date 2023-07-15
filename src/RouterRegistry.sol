@@ -7,10 +7,11 @@ import {IOwner} from "src/interfaces/IOwner.sol";
 import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
 
 contract RouterRegistry is IRegistryCallback {
-    bytes32 public constant INIT_CODE_HASH =
-        keccak256(type(Router).creationCode);
+    bytes32 public constant INIT_CODE_HASH = keccak256(type(Router).creationCode);
     address public cachedUser;
+
     event RouterCreated(address indexed user, address indexed router);
+
     error NotOwner();
     error RouterExists();
 
@@ -34,16 +35,11 @@ contract RouterRegistry is IRegistryCallback {
 
     function ownerOf(address router) external view returns (address) {
         address routerOwner = IOwner(router).owner();
-        if (router != _predictRouterAddress(keccak256(abi.encode(routerOwner))))
-            revert NotOwner();
+        if (router != _predictRouterAddress(keccak256(abi.encode(routerOwner)))) revert NotOwner();
         return routerOwner;
     }
 
-    function _predictRouterAddress(bytes32 salt)
-        internal
-        view
-        returns (address)
-    {
+    function _predictRouterAddress(bytes32 salt) internal view returns (address) {
         return Create2.computeAddress(salt, INIT_CODE_HASH, address(this));
     }
 }

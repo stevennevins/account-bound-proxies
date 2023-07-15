@@ -5,9 +5,10 @@ import {MultiSendCallOnly} from "src/lib/MultiSendCallOnly.sol";
 import {IRegistryCallback} from "src/interfaces/IRegistryCallback.sol";
 import {Proxy} from "openzeppelin-contracts/contracts/proxy/Proxy.sol";
 
-contract Router is Proxy{
+contract Router is Proxy {
     address internal immutable owner;
     address internal pluginLogic;
+
     error NotOwner();
 
     modifier onlyOwner() {
@@ -18,7 +19,6 @@ contract Router is Proxy{
     constructor() payable {
         owner = IRegistryCallback(msg.sender).cachedUser();
     }
-
 
     function updatePluginLogic(address _pluginLogic) external onlyOwner {
         pluginLogic = _pluginLogic;
@@ -39,7 +39,7 @@ contract Router is Proxy{
         }
     }
 
-    function _implementation() internal view override returns (address ){
+    function _implementation() internal view override returns (address) {
         return pluginLogic;
     }
 }

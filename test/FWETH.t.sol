@@ -38,21 +38,13 @@ contract FWETHTest is EncodeTxs, Test {
     function test_Multisend_WETH9() public {
         puller = new MockPullWETH(address(weth9));
         txs.push(
-            Transaction(
-                address(weth9),
-                1 ether,
-                abi.encodeCall(WETH9.deposit, ()),
-                Operation.Call
-            )
+            Transaction(address(weth9), 1 ether, abi.encodeCall(WETH9.deposit, ()), Operation.Call)
         );
         txs.push(
             Transaction(
                 address(weth9),
                 0,
-                abi.encodeCall(
-                    WETH9.approve,
-                    (address(puller), type(uint256).max)
-                ),
+                abi.encodeCall(WETH9.approve, (address(puller), type(uint256).max)),
                 Operation.Call
             )
         );
@@ -94,10 +86,7 @@ contract FWETHTest is EncodeTxs, Test {
             Transaction(
                 address(fweth),
                 0,
-                abi.encodeCall(
-                    FWETH.approve,
-                    (address(puller), type(uint256).max)
-                ),
+                abi.encodeCall(FWETH.approve, (address(puller), type(uint256).max)),
                 Operation.Call
             )
         );
@@ -117,9 +106,7 @@ contract FWETHTest is EncodeTxs, Test {
 
     function getRouterAddress(address _user) internal view returns (address) {
         address userRouter = Create2.computeAddress(
-            keccak256(abi.encode(_user)),
-            registry.INIT_CODE_HASH(),
-            address(registry)
+            keccak256(abi.encode(_user)), registry.INIT_CODE_HASH(), address(registry)
         );
         require(userRouter.code.length > 0, "no code");
         return userRouter;

@@ -16,19 +16,13 @@ contract WethConverter {
         forkedWETH = _forkedWETH;
     }
 
-    function weth9ToForkedWETH(address account, uint256 value)
-        external
-        payable
-    {
+    function weth9ToForkedWETH(address account, uint256 value) external payable {
         IWETH9(weth9).transferFrom(account, address(this), value);
         IWETH9(weth9).withdraw(value);
         IForkedWETH(forkedWETH).depositTo{value: value + msg.value}(account);
     }
 
-    function forkedWETHToWeth9(address account, uint256 value)
-        external
-        payable
-    {
+    function forkedWETHToWeth9(address account, uint256 value) external payable {
         IForkedWETH(forkedWETH).withdrawFrom(account, value, address(this));
         uint256 combined = value + msg.value;
         IWETH9(weth9).deposit{value: combined}();
