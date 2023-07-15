@@ -12,7 +12,8 @@ contract RouterVerifyTest is Test {
 
     function setUp() public {
         registry = new RouterRegistry();
-        registry.createRouter(owner);
+        vm.prank(owner, owner);
+        registry.createRouter();
     }
 
     function test_Verify() public {

@@ -18,14 +18,15 @@ contract WETHTest is EncodeTxs, Test {
     MockPullWETH internal puller;
 
     function setUp() public {
-        registry.createRouter(owner);
+        vm.prank(owner, owner);
+        registry.createRouter();
         router = Router(payable(getRouterAddress(owner)));
     }
 
     function test_EOA_WETH9() public {
         puller = new MockPullWETH(address(weth9));
         vm.deal(owner, 1 ether);
-        vm.startPrank(owner);
+        vm.startPrank(owner, owner);
         weth9.deposit{value: 1 ether}();
         weth9.approve(address(puller), type(uint256).max);
         puller.depositWETH(1 ether);

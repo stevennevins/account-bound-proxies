@@ -2,14 +2,13 @@
 pragma solidity ^0.8.20;
 
 import {MultiSendCallOnly} from "src/lib/MultiSendCallOnly.sol";
-import {IRegistryCallback} from "src/interfaces/IRegistryCallback.sol";
 import {Proxy} from "openzeppelin-contracts/contracts/proxy/Proxy.sol";
 
 /// @title Router Contract
 /// @notice A contract that acts as a router and proxy for executing multiple transactions.
 contract Router is Proxy {
     /// @notice The owner of the Router
-    address internal immutable owner;
+    address internal immutable owner = tx.origin;
     /// @notice Option logic that can be installed to enhance functionality of the router
     address internal pluginLogic;
 
@@ -20,10 +19,6 @@ contract Router is Proxy {
     modifier onlyOwner() {
         if (msg.sender != owner) revert NotOwner();
         _;
-    }
-
-    constructor() payable {
-        owner = IRegistryCallback(msg.sender).cachedUser();
     }
 
     /// @notice Updates the plugin logic address.

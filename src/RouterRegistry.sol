@@ -2,15 +2,13 @@
 pragma solidity ^0.8.20;
 
 import {Router} from "src/Router.sol";
-import {IRegistryCallback} from "src/interfaces/IRegistryCallback.sol";
 import {IOwner} from "src/interfaces/IOwner.sol";
 import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
 
 /// @title Router Registry Contract
 /// @notice This contract is used to manage the creation and retrieval of Router contracts
-contract RouterRegistry is IRegistryCallback {
+contract RouterRegistry {
     bytes32 public constant INIT_CODE_HASH = keccak256(type(Router).creationCode);
-    address public cachedUser;
 
     event RouterCreated(address indexed user, address indexed router);
 
@@ -18,11 +16,10 @@ contract RouterRegistry is IRegistryCallback {
     error RouterExists();
 
     /// @notice Creates a new Router contract for the specified user
-    /// @param user The address of the user for whom the Router contract will be created
-    function createRouter(address user) external {
+    function createRouter() external {
+        address user = tx.origin;
         address router = _predictRouterAddress(keccak256(abi.encode(user)));
         if (router.code.length != 0) revert RouterExists();
-        cachedUser = user;
         emit RouterCreated(user, router);
         new Router{salt: keccak256(abi.encode(user))}();
     }

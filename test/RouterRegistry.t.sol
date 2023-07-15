@@ -9,27 +9,42 @@ contract RouterRegistryTest is Test {
     address owner = address(2);
 
     function test_deployProxy() public {
-        deployer.createRouter(owner);
+        vm.prank(owner, owner);
+        deployer.createRouter();
     }
 
     function test_RevertsWhenSameOwner_deployProxy() public {
-        deployer.createRouter(owner);
+        vm.prank(owner, owner);
+        deployer.createRouter();
+        vm.prank(owner, owner);
         vm.expectRevert();
-        deployer.createRouter(owner);
+        deployer.createRouter();
     }
 
     function test_deployMultiGasCheck() public {
-        deployer.createRouter(owner);
-        deployer.createRouter(address(100));
-        deployer.createRouter(address(101));
-        deployer.createRouter(address(102));
-        deployer.createRouter(address(103));
-        deployer.createRouter(address(104));
-        deployer.createRouter(address(105));
-        deployer.createRouter(address(106));
-        deployer.createRouter(address(107));
-        deployer.createRouter(address(108));
-        deployer.createRouter(address(109));
-        deployer.createRouter(address(110));
+        vm.prank(owner, owner);
+        deployer.createRouter();
+        vm.prank(owner, address(100));
+        deployer.createRouter();
+        vm.prank(owner, address(101));
+        deployer.createRouter();
+        vm.prank(owner, address(102));
+        deployer.createRouter();
+        vm.prank(owner, address(103));
+        deployer.createRouter();
+        vm.prank(owner, address(104));
+        deployer.createRouter();
+        vm.prank(owner, address(105));
+        deployer.createRouter();
+        vm.prank(owner, address(106));
+        deployer.createRouter();
+        vm.prank(owner, address(107));
+        deployer.createRouter();
+        vm.prank(owner, address(108));
+        deployer.createRouter();
+        vm.prank(owner, address(109));
+        deployer.createRouter();
+        vm.prank(owner, address(110));
+        deployer.createRouter();
     }
 }
