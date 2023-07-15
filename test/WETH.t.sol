@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.20;
 
 import {Test} from "forge-std/Test.sol";
 import {Router} from "src/Router.sol";
 import {RouterRegistry} from "src/RouterRegistry.sol";
 import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
-import {FWETH} from "test/examples/FWETH.sol";
 import {WETH9} from "test/examples/WETH9.sol";
 import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
 import {MockPullWETH} from "test/examples/mocks/MockPullWETH.sol";

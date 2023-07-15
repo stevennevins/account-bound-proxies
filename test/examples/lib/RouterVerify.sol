@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.20;
 
 import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
 import {Router} from "src/Router.sol";
