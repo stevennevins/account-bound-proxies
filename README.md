@@ -1,6 +1,6 @@
 # Account Bound Routers
 
-The goal of this repository is to provide a system for creating and managing Router contracts for users, and executing multiple transactions in a single call. The Router contracts act as a proxy for executing multiple transactions by the owner and can be extended through the installation of plugin contracts that can be installed by a Router's owner.
+Account-Bound-Routers provide a system for creating and managing Router contracts that can be used to execute multiple transactions in a single call. The Router contracts act as a proxy for executing multiple transactions by the owner and can be extended through the installation of plugin contracts that can be installed by a Router's owner.
 
 ## Router.sol
 
