@@ -1,23 +1,22 @@
 # Externally Owned Account(EOA) Bound Routers
 
-EOA-Bound-Routers provide a system for creating and managing Router contracts that can be used to execute multiple transactions in a single call. The Router contracts act as a proxy for executing multiple transactions by the owner and can be extended through the installation of plugin contracts that can be installed by a Router's owner.
+EOA-Bound-Routers provides a protocol agnostic transaction batching mechanism to improve UX for EOA users. The goal of the smart contracts are 1. Improve the UX for EOA users and 2. To help smart contract developers to write simpler, safer, and more atomic interactions.
 
-Intended to be compatible with https://github.com/gnosis/ethers-multisend
+Routers are intended to be compatible with https://github.com/gnosis/ethers-multisend
 
 ## Router.sol
 
-The Router.sol is a smart contract that acts as a router and proxy for executing multiple transactions. It is designed to be owned by a single address and provides functionality to execute multiple transactions in a single call and to update the plugin logic address.
+The Router.sol is a smart contract that acts as a router and proxy for executing multiple transactions. It is designed to be owned by a single address whose ownership is verifiable from a central onchain registry.
 
 ### Main functionalities of the Router contract:
 
-- Ownership: The contract has an owner, set during the contract's creation in the constructor as tx.origin. Only the owner(EOA) can execute multisend functions or update the plugin logic, enforced by the onlyOwner modifier.
-- Plugin Logic: The contract has a plugin logic address, which can be updated by the owner using the updatePluginLogic function. The plugin logic address is used as the implementation address in the inherited \_implementation function from the Proxy contract.
-- Multi-Transaction Execution: The contract provides a function multiSend that allows the owner to execute multiple transactions in a single call. This function uses the multiSend function from the MultiSendCallOnly library.
-- Fallback Functionality: The contract overrides the \_beforeFallback function from the Proxy contract. If the function signature matches the owner() function, it returns the owner's address. This allows external contracts to retrieve the owner's address without needing a separate function call.
+- Ownership: The contract has an owner, set during the contract's creation as tx.origin. Only the owner can execute multisend functions or update the option plugin logic address.
+- Plugin Logic: The contract has a plugin logic address, which is optional and can be utilized to enhance the functionality of the router, ie Add onReceived hooks for NFTs
+- Multi-Transaction Execution: The contract provides a function multiSend that allows the owner to execute multiple transactions in a single call. This function uses the multiSend function from the MultiSendCallOnly library which was adapted from Gnosis Safe and is intended to be fully compatible with the transaction encoding and decoding patterns they developed.
 
 ## RouterRegistry.sol
 
-The RouterRegistry.sol is a smart contract that manages the creation and retrieval of Router contracts. It provides functionalities to create a new Router contract for a user, check if a Router contract exists for a user, get the address of the Router contract for a user, and get the owner of a Router contract.
+The RouterRegistry.sol is a smart contract that manages the creation, retrieval, and ownership verification of Router contracts.
 
 ### Main functionalities of the RouterRegistry contract:
 
