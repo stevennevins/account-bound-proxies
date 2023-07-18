@@ -3,7 +3,9 @@
 
 Externally owned account(EOA)-Bound-Routers provides a protocol agnostic transaction batching mechanism to improve UX for EOA users. The goal of the smart contracts are:
  1. Improve the UX for EOA users
- 2. To help smart contract developers to write simpler, safer, and more atomic interactions.
+ 2. Help protocol developers write simpler, safer, and more atomic interactions.
+
+Inspired by earlier work done by @albertocuestacanada from yield protocol, specifically this article: https://hackernoon.com/using-the-forward-trust-design-pattern-to-make-scaling-easier, as well as @PaulRBerg work with PRB-Proxy, and DS-Proxy by dapphub
 
 Routers are intended to be compatible with https://github.com/gnosis/ethers-multisend
 
