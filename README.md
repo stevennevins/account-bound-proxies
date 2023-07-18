@@ -1,7 +1,7 @@
-# Externally Owned Account(EOA) Bound Routers
+# EOA Bound Routers
 ### First there was BYOB now there is BYOR
 
-EOA-Bound-Routers provides a protocol agnostic transaction batching mechanism to improve UX for EOA users. The goal of the smart contracts are 1. Improve the UX for EOA users and 2. To help smart contract developers to write simpler, safer, and more atomic interactions.
+Externally owned account(EOA)-Bound-Routers provides a protocol agnostic transaction batching mechanism to improve UX for EOA users. The goal of the smart contracts are 1. Improve the UX for EOA users and 2. To help smart contract developers to write simpler, safer, and more atomic interactions.
 
 Routers are intended to be compatible with https://github.com/gnosis/ethers-multisend
 
