@@ -1,5 +1,4 @@
 # EOA Bound Routers
-### First there was BYOB now there is BYOR
 
 Externally owned account(EOA)-Bound-Routers provides a protocol agnostic transaction batching mechanism to improve UX for EOA users. The goal of the smart contracts are:
  1. Improve the UX for EOA users
