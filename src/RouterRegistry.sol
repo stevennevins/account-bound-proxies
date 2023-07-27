@@ -45,7 +45,7 @@ contract RouterRegistry {
     /// @return The owner address of the Router contract
     function ownerOf(address router) external view returns (address) {
         address routerOwner = IOwner(router).owner();
-        if (router != _predictRouterAddress(keccak256(abi.encode(routerOwner)))) revert NotOwner();
+        if (router != _predictRouterAddress(keccak256(abi.encode(routerOwner)))) return address(0);
         return routerOwner;
     }
 
