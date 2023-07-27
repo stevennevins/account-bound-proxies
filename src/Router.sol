@@ -15,21 +15,17 @@ contract Router is Proxy {
     /// @notice Error when caller is not owner of the router
     error NotOwner();
 
-    /// @dev Modifier to ensure that only the owner can execute a function.
-    modifier onlyOwner() {
-        if (msg.sender != owner) revert NotOwner();
-        _;
-    }
-
     /// @notice Updates the plugin logic address.
     /// @param _pluginLogic The new plugin logic address.
-    function updatePluginLogic(address _pluginLogic) external onlyOwner {
+    function updatePluginLogic(address _pluginLogic) external {
+        _checkOwner();
         pluginLogic = _pluginLogic;
     }
 
     /// @notice Executes multiple transactions in a single call.
     /// @param transactions The byte array containing the encoded transactions.
-    function multiSend(bytes memory transactions) external payable onlyOwner {
+    function multiSend(bytes memory transactions) external payable {
+        _checkOwner();
         MultiSendCallOnly.multiSend(transactions);
     }
 
@@ -46,5 +42,9 @@ contract Router is Proxy {
 
     function _implementation() internal view override returns (address) {
         return pluginLogic;
+    }
+
+    function _checkOwner() internal view {
+        if (msg.sender != owner) revert NotOwner();
     }
 }
