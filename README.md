@@ -7,6 +7,7 @@ Externally owned account(EOA)-Bound-Routers provides a protocol agnostic transac
 Inspired by earlier work done by @albertocuestacanada from yield protocol, specifically this article: https://hackernoon.com/using-the-forward-trust-design-pattern-to-make-scaling-easier, as well as @PaulRBerg work with PRB-Proxy, and DS-Proxy by dapphub
 
 Routers are intended to be compatible with https://github.com/gnosis/ethers-multisend
+UX like -> https://github.com/morpho-labs/gnosis-tx-builder
 
 ## Router.sol
 
