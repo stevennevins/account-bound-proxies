@@ -19,8 +19,8 @@ contract WETHTest is EncodeTxs, Test {
 
     function setUp() public {
         vm.prank(owner, owner);
-        registry.createRouter();
-        router = Router(payable(getRouterAddress(owner)));
+        registry.createRouter(owner);
+        router = Router(payable(registry.routerFor(owner)));
     }
 
     function test_EOA_WETH9() public {
@@ -58,13 +58,5 @@ contract WETHTest is EncodeTxs, Test {
         vm.deal(owner, 1 ether);
         vm.prank(owner);
         router.multiSend{value: 1 ether}(encode(txs));
-    }
-
-    function getRouterAddress(address _user) internal view returns (address) {
-        address userRouter = Create2.computeAddress(
-            keccak256(abi.encode(_user)), registry.INIT_CODE_HASH(), address(registry)
-        );
-        require(userRouter.code.length > 0, "no code");
-        return userRouter;
     }
 }

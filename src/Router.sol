@@ -3,12 +3,15 @@ pragma solidity ^0.8.20;
 
 import {MultiSendCallOnly} from "src/lib/MultiSendCallOnly.sol";
 import {Proxy} from "openzeppelin-contracts/contracts/proxy/Proxy.sol";
+import {Clones} from "openzeppelin-contracts/contracts/proxy/Clones.sol";
 
 /// @title Router Contract
 /// @notice A contract that acts as a router and proxy for executing multiple transactions.
 contract Router is Proxy {
-    /// @notice The owner of the Router
-    address internal immutable owner = tx.origin;
+    /// @notice The router registry
+    address internal immutable registry = msg.sender;
+    /// @notice The router implementation
+    address internal immutable routerImplementation = address(this);
     /// @notice Option logic that can be installed to enhance functionality of the router
     address internal pluginLogic;
 
@@ -17,6 +20,7 @@ contract Router is Proxy {
 
     /// @notice Updates the plugin logic address.
     /// @param _pluginLogic The new plugin logic address.
+
     function updatePluginLogic(address _pluginLogic) external {
         _checkOwner();
         pluginLogic = _pluginLogic;
@@ -29,22 +33,14 @@ contract Router is Proxy {
         MultiSendCallOnly.multiSend(transactions);
     }
 
-    function _beforeFallback() internal view override {
-        if (msg.sig == bytes4(keccak256("owner()"))) {
-            address owner_ = owner;
-            assembly {
-                let result := owner_
-                mstore(0x0, result)
-                return(0x0, 20)
-            }
-        }
-    }
-
     function _implementation() internal view override returns (address) {
         return pluginLogic;
     }
 
     function _checkOwner() internal view {
-        if (msg.sender != owner) revert NotOwner();
+        address router = Clones.predictDeterministicAddress(
+            routerImplementation, keccak256(abi.encode(msg.sender)), registry
+        );
+        if (router != address(this)) revert NotOwner();
     }
 }
