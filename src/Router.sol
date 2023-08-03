@@ -10,7 +10,9 @@ import {Clones} from "openzeppelin-contracts/contracts/proxy/Clones.sol";
 /// @title Router Contract
 /// @notice A contract that acts as a router and proxy for executing multiple transactions.
 contract Router is Proxy, ERC1155Holder, ERC721Holder {
+    using Clones for address;
     /// @notice The router registry
+
     address internal immutable registry = msg.sender;
     /// @notice The router implementation
     address internal immutable routerImplementation = address(this);
@@ -22,7 +24,6 @@ contract Router is Proxy, ERC1155Holder, ERC721Holder {
 
     /// @notice Updates the plugin logic address.
     /// @param _pluginLogic The new plugin logic address.
-
     function updatePluginLogic(address _pluginLogic) external {
         _checkOwner();
         pluginLogic = _pluginLogic;
@@ -30,7 +31,7 @@ contract Router is Proxy, ERC1155Holder, ERC721Holder {
 
     /// @notice Executes multiple transactions in a single call.
     /// @param transactions The byte array containing the encoded transactions.
-    function multiSend(bytes memory transactions) external payable {
+    function multiSend(bytes calldata transactions) external payable {
         _checkOwner();
         MultiSendCallOnly.multiSend(transactions);
     }
@@ -40,8 +41,8 @@ contract Router is Proxy, ERC1155Holder, ERC721Holder {
     }
 
     function _checkOwner() internal view {
-        address router = Clones.predictDeterministicAddress(
-            routerImplementation, keccak256(abi.encode(msg.sender)), registry
+        address router = routerImplementation.predictDeterministicAddress(
+            keccak256(abi.encode(msg.sender)), registry
         );
         if (router != address(this)) revert NotOwner();
     }
