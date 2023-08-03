@@ -2,12 +2,14 @@
 pragma solidity ^0.8.20;
 
 import {MultiSendCallOnly} from "src/lib/MultiSendCallOnly.sol";
+import {ERC1155Holder} from "openzeppelin-contracts/contracts/token/ERC1155/utils/ERC1155Holder.sol";
+import {ERC721Holder} from "openzeppelin-contracts/contracts/token/ERC721/utils/ERC721Holder.sol";
 import {Proxy} from "openzeppelin-contracts/contracts/proxy/Proxy.sol";
 import {Clones} from "openzeppelin-contracts/contracts/proxy/Clones.sol";
 
 /// @title Router Contract
 /// @notice A contract that acts as a router and proxy for executing multiple transactions.
-contract Router is Proxy {
+contract Router is Proxy, ERC1155Holder, ERC721Holder {
     /// @notice The router registry
     address internal immutable registry = msg.sender;
     /// @notice The router implementation
