@@ -1,6 +1,6 @@
-# EOA Bound Routers
+# Account Bound Routers
 
-Externally owned account(EOA)-Bound-Routers provides a protocol agnostic transaction batching mechanism to improve UX for EOA users. The goal of the smart contracts are:
+Externally owned Account-Bound-Routers provides a protocol agnostic transaction batching mechanism to improve UX for EOA users. The goal of the smart contracts are:
  1. Improve the UX for EOA users
  2. Help protocol developers write simpler, safer, and more atomic interactions.
 
