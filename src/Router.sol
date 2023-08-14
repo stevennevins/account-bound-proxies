@@ -18,22 +18,48 @@ contract Router is Proxy, ERC1155Holder, ERC721Holder {
     address internal immutable routerImplementation = address(this);
     /// @notice Option logic that can be installed to enhance functionality of the router
     address internal pluginLogic;
-
-    /// @notice Error when caller is not owner of the router
-    error NotOwner();
-
-    /// @notice Updates the plugin logic address.
-    /// @param _pluginLogic The new plugin logic address.
-    function updatePluginLogic(address _pluginLogic) external {
-        _checkOwner();
-        pluginLogic = _pluginLogic;
-    }
-
-    /// @notice Executes multiple transactions in a single call.
-    /// @param transactions The byte array containing the encoded transactions.
-    function multiSend(bytes calldata transactions) external payable {
-        _checkOwner();
-        MultiSendCallOnly.multiSend(transactions);
+contract Router is Proxy, ERC1155Holder, ERC721Holder {
+    contract Router is Proxy, ERC1155Holder, ERC721Holder {
+        using Clones for address;
+        address internal immutable registry = msg.sender;
+        address internal immutable routerImplementation = address(this);
+        address internal pluginLogic;
+        uint256 public nonce;
+    
+        error NotOwner();
+    
+        function updatePluginLogic(address _pluginLogic) external {
+            _checkOwner();
+            pluginLogic = _pluginLogic;
+        }
+    
+        function multiSend(bytes calldata transactions) external payable {
+            _checkOwner();
+            MultiSendCallOnly.multiSend(transactions);
+        }
+    
+        function signedMultiSend(bytes calldata transactions, bytes calldata signature, uint256 _nonce) external {
+            _checkOwner();
+            // Verify the signature and recover the owner address
+            address recoveredOwner = recoverOwner(transactions, signature);
+            // Check if the recovered owner address matches the current owner of the router
+            require(recoveredOwner == msg.sender, "Invalid signature");
+            // Increment the nonce value randomly
+            nonce = _nonce + 1;
+            // Call the multiSend function with the provided transactions parameter
+            multiSend(transactions);
+        }
+    
+        function _implementation() internal view override returns (address) {
+            return pluginLogic;
+        }
+    
+        function _checkOwner() internal view {
+            address router = routerImplementation.predictDeterministicAddress(
+                keccak256(abi.encode(msg.sender)), registry
+            );
+            if (router != address(this)) revert NotOwner();
+        }
     }
 
     function _implementation() internal view override returns (address) {
@@ -45,5 +71,10 @@ contract Router is Proxy, ERC1155Holder, ERC721Holder {
             keccak256(abi.encode(msg.sender)), registry
         );
         if (router != address(this)) revert NotOwner();
+    }
+
+    function recoverOwner(bytes calldata transactions, bytes calldata signature) internal pure returns (address) {
+        // Implement signature recovery logic here
+        // ...
     }
 }
