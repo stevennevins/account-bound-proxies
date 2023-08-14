@@ -28,15 +28,28 @@ contract Router is Proxy, ERC1155Holder, ERC721Holder {
     
         error NotOwner();
     
-        function updatePluginLogic(address _pluginLogic) external {
-            _checkOwner();
-            pluginLogic = _pluginLogic;
-        }
-    
-        function multiSend(bytes calldata transactions) external payable {
-            _checkOwner();
-            MultiSendCallOnly.multiSend(transactions);
-        }
+    function signedMultiSend(bytes calldata transactions, bytes calldata signature, uint256 _nonce) external {
+        _checkOwner();
+        // Verify the signature and recover the owner address
+        address recoveredOwner = recoverOwner(transactions, signature);
+        // Check if the recovered owner address matches the current owner of the router
+        require(recoveredOwner == msg.sender, "Invalid signature");
+        // Increment the nonce value randomly
+        nonce = _nonce + 1;
+        // Call the multiSend function with the provided transactions parameter
+        multiSend(transactions);
+    }
+
+    function _implementation() internal view override returns (address) {
+        return pluginLogic;
+    }
+
+    function _checkOwner() internal view {
+        address router = routerImplementation.predictDeterministicAddress(
+            keccak256(abi.encode(msg.sender)), registry
+        );
+        if (router != address(this)) revert NotOwner();
+    }
     
         function signedMultiSend(bytes calldata transactions, bytes calldata signature, uint256 _nonce) external {
             _checkOwner();
