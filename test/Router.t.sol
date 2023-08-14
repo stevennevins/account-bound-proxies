@@ -58,4 +58,12 @@ contract RouterTest is EncodeTxs, Emitter, Test {
         vm.prank(owner, owner);
         router.multiSend(encode(txs));
     }
+    
+    function test_SignedMultiSend() public {
+        // Add test cases to verify the functionality of the new `signedMultiSend` function
+    }
+
+    function test_SignedMultiSend() public {
+        // Add test cases to verify the functionality of the new `signedMultiSend` function
+    }
 }
