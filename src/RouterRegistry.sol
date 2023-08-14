@@ -11,7 +11,7 @@ contract RouterRegistry {
     using Clones for address;
 
     bytes32 public constant INIT_CODE_HASH = keccak256(type(Router).creationCode);
-    address internal routerImplementation = address(new Router());
+    address internal immutable ROUTER_IMPLEMENTATION = address(new Router());
 
     event RouterCreated(address indexed user, address indexed router);
 
@@ -23,7 +23,7 @@ contract RouterRegistry {
         bytes32 salt = keccak256(abi.encode(_user));
         address router = _predictRouterAddress(salt);
         if (router.code.length != 0) revert RouterExists();
-        address router_ = routerImplementation.cloneDeterministic(salt);
+        address router_ = ROUTER_IMPLEMENTATION.cloneDeterministic(salt);
         emit RouterCreated(_user, router);
     }
 
@@ -44,6 +44,6 @@ contract RouterRegistry {
     }
 
     function _predictRouterAddress(bytes32 salt) internal view returns (address) {
-        return Clones.predictDeterministicAddress(routerImplementation, salt);
+        return Clones.predictDeterministicAddress(ROUTER_IMPLEMENTATION, salt);
     }
 }
