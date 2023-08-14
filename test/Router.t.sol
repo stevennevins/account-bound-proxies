@@ -55,14 +55,6 @@ contract RouterTest is EncodeTxs, Emitter, Test {
 
     function test_EncodedCall() public {
         txs.push(Transaction(address(this), 0, abi.encodeCall(Emitter.ping, ()), Operation.Call));
-        vm.prank(owner, owner);
-        router.multiSend(encode(txs));
-    }
-    
-    function test_SignedMultiSend() public {
-        // Add test cases to verify the functionality of the new `signedMultiSend` function
-    }
-
     function test_SignedMultiSend() public {
         // Add test cases to verify the functionality of the new `signedMultiSend` function
     }
