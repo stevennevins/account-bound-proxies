@@ -67,5 +67,19 @@ contract RouterTest is EncodeTxs, Emitter, Test {
         // Add assertions to test the functionality of verifying the signature, recovering the owner address, and incrementing the nonce
         // ...
         // Add assertions here to test the functionality of verifying the signature, recovering the owner address, and incrementing the nonce
+        // Assertion 1: Verify the recovered owner address
+        address recoveredOwner = /* Implement the logic to recover the owner address */;
+        assertEq(recoveredOwner, msg.sender, "Recovered owner address does not match");
+    
+        // Assertion 2: Verify the incremented nonce
+        uint256 expectedNonce = nonce + 1;
+        assertEq(router.nonce(), expectedNonce, "Nonce not incremented correctly");
+    }
+        address recoveredOwner = /* Implement the logic to recover the owner address */;
+        assertEq(recoveredOwner, msg.sender, "Recovered owner address does not match");
+    
+        // Assertion 2: Verify the incremented nonce
+        uint256 expectedNonce = nonce + 1;
+        assertEq(router.nonce(), expectedNonce, "Nonce not incremented correctly");
     }
 }
