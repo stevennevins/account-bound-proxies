@@ -10,6 +10,7 @@ Routers are intended to be compatible with https://github.com/gnosis/ethers-mult
 UX like -> https://github.com/morpho-labs/gnosis-tx-builder
 
 ## Router.sol
+## Router.sol
 
 The Router.sol is a smart contract that acts as a router and proxy for executing multiple transactions. It is designed to be owned by a single address whose ownership is verifiable from a central onchain registry.
 
@@ -18,6 +19,7 @@ The Router.sol is a smart contract that acts as a router and proxy for executing
 - Ownership: The contract has an owner, set during the contract's creation as tx.origin. Only the owner can execute multisend functions or update the option plugin logic address.
 - Plugin Logic: The contract has a plugin logic address, which is optional and can be utilized to enhance the functionality of the router, ie Add onReceived hooks for NFTs
 - Multi-Transaction Execution: The contract provides a function multiSend that allows the owner to execute multiple transactions in a single call. This function uses the multiSend function from the MultiSendCallOnly library which was adapted from Gnosis Safe and is intended to be fully compatible with the transaction encoding and decoding patterns they developed.
+- Signed Transaction Execution: The contract provides a function signedMultiSend that allows the owner to execute multiple signed transactions in a single call. This function verifies the signature, increments the nonce, and executes the transactions. The nonce is used to prevent replay attacks.
 
 ## RouterRegistry.sol
 
@@ -29,3 +31,5 @@ The RouterRegistry.sol is a smart contract that manages the creation, retrieval,
 - Router Existence Check: The contract provides a function routerExistsFor that checks if a Router contract exists for a specified user. It uses the Create2 library to predict the address of the Router contract and checks if a contract exists at that address.
 - Router Retrieval: The contract provides a function routerFor that gets the address of the Router contract for a specified user. It uses the Create2 library to predict the address of the Router contract.
 - Router Ownership Check: The contract provides a function ownerOf that gets the owner of a Router contract. It uses the IOwner interface to get the owner of the Router contract and checks if the owner matches the predicted owner.
+- Nonce Usage: The Router contract uses a `nonce` variable of type `uint256` to keep track of the nonce value. The `signedMultiSend` function increments the nonce when executed to prevent replay attacks.
+- Nonce Usage: The Router contract uses a `nonce` variable of type `uint256` to keep track of the nonce value. The `signedMultiSend` function increments the nonce when executed to prevent replay attacks.
