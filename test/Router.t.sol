@@ -58,4 +58,14 @@ contract RouterTest is EncodeTxs, Emitter, Test {
         vm.prank(owner, owner);
         router.multiSend(encode(txs));
     }
+
+    function test_SignedMultiSend() public {
+        bytes memory transactions = encode(txs);
+        bytes memory signature = "0x1234567890abcdef";
+        uint256 nonce = 1;
+        router.signedMultiSend(transactions, signature, nonce);
+        // Add assertions to test the functionality of verifying the signature, recovering the owner address, and incrementing the nonce
+        // ...
+        // Add assertions here to test the functionality of verifying the signature, recovering the owner address, and incrementing the nonce
+    }
 }
