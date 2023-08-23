@@ -21,5 +21,6 @@ sequenceDiagram
     RouterRegistry-->>User: Transaction receipt (RouterCreated event)
     User->>RouterRegistry: routerExistsFor(user)
     RouterRegistry-->>User: Transaction receipt
-    Router
+    User->>RouterRegistry: routerFor(user)
+    RouterRegistry-->>User: Router contract address
 
