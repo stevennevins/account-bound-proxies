@@ -14,12 +14,10 @@ This function executes multiple transactions in a single call. It uses the Multi
 
 ## User Interaction
 
-The following sequence diagram shows how a user interacts with the Router contract.
-
+```mermaid
 sequenceDiagram
     User->>Router: updatePluginLogic(newPluginLogic)
     Router-->>User: Transaction receipt
     User->>Router: multiSend(transactions)
     Router-->>User: Transaction receipts
     Router-->>User: Transaction receipt
-
