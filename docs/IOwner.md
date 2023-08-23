@@ -14,5 +14,5 @@ The following sequence diagram shows how a user interacts with a contract that i
 
 sequenceDiagram
     User->>IOwner: owner()
-    IOwner
+    IOwner->>User: Address of the contract owner
 
