@@ -20,5 +20,5 @@ sequenceDiagram
     User->>Router: updatePluginLogic(newPluginLogic)
     Router-->>User: Transaction receipt
     User->>Router: multiSend(transactions)
-    Router
+    Router-->>User: Transaction receipts
 
