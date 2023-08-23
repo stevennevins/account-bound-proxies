@@ -20,5 +20,6 @@ sequenceDiagram
     User->>RouterRegistry: createRouter(user)
     RouterRegistry-->>User: Transaction receipt (RouterCreated event)
     User->>RouterRegistry: routerExistsFor(user)
+    RouterRegistry-->>User: Transaction receipt
     Router
 
