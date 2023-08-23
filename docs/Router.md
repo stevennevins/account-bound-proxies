@@ -21,4 +21,5 @@ sequenceDiagram
     Router-->>User: Transaction receipt
     User->>Router: multiSend(transactions)
     Router-->>User: Transaction receipts
+    Router-->>User: Transaction receipt
 
