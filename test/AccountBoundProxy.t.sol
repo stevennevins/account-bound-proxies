@@ -2,8 +2,8 @@
 pragma solidity ^0.8.20;
 
 import {Test} from "forge-std/Test.sol";
-import {Router} from "src/Router.sol";
-import {RouterRegistry} from "src/RouterRegistry.sol";
+import {AccountBoundProxy} from "src/AccountBoundProxy.sol";
+import {ProxyRegistry} from "src/ProxyRegistry.sol";
 import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 
 contract Emitter {
@@ -14,33 +14,33 @@ contract Emitter {
     }
 }
 
-contract RouterTest is EncodeTxs, Emitter, Test {
-    RouterRegistry internal deployer = new RouterRegistry();
+contract AccountBoundProxyTest is EncodeTxs, Emitter, Test {
+    ProxyRegistry internal deployer = new ProxyRegistry();
     address owner = address(2);
-    Router internal router;
+    AccountBoundProxy internal proxy;
     Transaction[] internal txs;
 
     function setUp() public {
-        deployer.createRouter(owner);
-        router = Router(payable(deployer.routerFor(owner)));
+        deployer.createProxy(owner);
+        proxy = AccountBoundProxy(payable(deployer.proxyFor(owner)));
     }
 
     function test_owner() public {
         vm.prank(owner, owner);
-        router.multiSend("");
+        proxy.multiSend("");
     }
 
     function test_RevertsWhenNotowner() public {
         vm.prank(address(3));
         vm.expectRevert();
-        router.multiSend("");
+        proxy.multiSend("");
     }
 
     function test_ExecuteTransfer() public {
         vm.deal(owner, 1 ether);
         txs.push(Transaction(address(4), 1, hex"", Operation.Call));
         vm.prank(owner, owner);
-        router.multiSend{value: 1}(encode(txs));
+        proxy.multiSend{value: 1}(encode(txs));
         assertEq(address(4).balance, 1);
     }
 
@@ -49,13 +49,13 @@ contract RouterTest is EncodeTxs, Emitter, Test {
         txs.push(Transaction(address(4), 1, hex"", Operation.Call));
         txs.push(Transaction(address(4), 1, hex"", Operation.Call));
         vm.prank(owner, owner);
-        router.multiSend{value: 2}(encode(txs));
+        proxy.multiSend{value: 2}(encode(txs));
         assertEq(address(4).balance, 2);
     }
 
     function test_EncodedCall() public {
         txs.push(Transaction(address(this), 0, abi.encodeCall(Emitter.ping, ()), Operation.Call));
         vm.prank(owner, owner);
-        router.multiSend(encode(txs));
+        proxy.multiSend(encode(txs));
     }
 }

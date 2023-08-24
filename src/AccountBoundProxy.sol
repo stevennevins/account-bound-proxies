@@ -7,19 +7,19 @@ import {ERC721Holder} from "openzeppelin-contracts/contracts/token/ERC721/utils/
 import {Proxy} from "openzeppelin-contracts/contracts/proxy/Proxy.sol";
 import {Clones} from "openzeppelin-contracts/contracts/proxy/Clones.sol";
 
-/// @title Router Contract
-/// @notice A contract that acts as a router and proxy for executing multiple transactions.
-contract Router is Proxy, ERC1155Holder, ERC721Holder {
+/// @title AccountBoundProxy Contract
+/// @notice A contract that acts as a proxy and proxy for executing multiple transactions.
+contract AccountBoundProxy is Proxy, ERC1155Holder, ERC721Holder {
     using Clones for address;
-    /// @notice The router registry
+    /// @notice The proxy registry
 
     address internal immutable registry = msg.sender;
-    /// @notice The router implementation
-    address internal immutable routerImplementation = address(this);
-    /// @notice Option logic that can be installed to enhance functionality of the router
+    /// @notice The proxy implementation
+    address internal immutable implementation = address(this);
+    /// @notice Option logic that can be installed to enhance functionality of the proxy
     address internal pluginLogic;
 
-    /// @notice Error when caller is not owner of the router
+    /// @notice Error when caller is not owner of the proxy
     error NotOwner();
 
     /// @notice Updates the plugin logic address.
@@ -41,9 +41,8 @@ contract Router is Proxy, ERC1155Holder, ERC721Holder {
     }
 
     function _checkOwner() internal view {
-        address router = routerImplementation.predictDeterministicAddress(
-            keccak256(abi.encode(msg.sender)), registry
-        );
-        if (router != address(this)) revert NotOwner();
+        address proxy =
+            implementation.predictDeterministicAddress(keccak256(abi.encode(msg.sender)), registry);
+        if (proxy != address(this)) revert NotOwner();
     }
 }

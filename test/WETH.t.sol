@@ -2,25 +2,25 @@
 pragma solidity ^0.8.20;
 
 import {Test} from "forge-std/Test.sol";
-import {Router} from "src/Router.sol";
-import {RouterRegistry} from "src/RouterRegistry.sol";
+import {AccountBoundProxy} from "src/AccountBoundProxy.sol";
+import {ProxyRegistry} from "src/ProxyRegistry.sol";
 import {EncodeTxs, Transaction, Operation} from "test/helpers/EncodeTx.sol";
 import {WETH9} from "test/examples/WETH9.sol";
 import {Create2} from "openzeppelin-contracts/contracts/utils/Create2.sol";
 import {MockPullWETH} from "test/examples/mocks/MockPullWETH.sol";
 
 contract WETHTest is EncodeTxs, Test {
-    RouterRegistry internal registry = new RouterRegistry();
+    ProxyRegistry internal registry = new ProxyRegistry();
     WETH9 internal weth9 = new WETH9();
     address internal owner = address(2);
     Transaction[] internal txs;
-    Router internal router;
+    AccountBoundProxy internal proxy;
     MockPullWETH internal puller;
 
     function setUp() public {
         vm.prank(owner, owner);
-        registry.createRouter(owner);
-        router = Router(payable(registry.routerFor(owner)));
+        registry.createProxy(owner);
+        proxy = AccountBoundProxy(payable(registry.proxyFor(owner)));
     }
 
     function test_EOA_WETH9() public {
@@ -57,6 +57,6 @@ contract WETHTest is EncodeTxs, Test {
 
         vm.deal(owner, 1 ether);
         vm.prank(owner);
-        router.multiSend{value: 1 ether}(encode(txs));
+        proxy.multiSend{value: 1 ether}(encode(txs));
     }
 }
