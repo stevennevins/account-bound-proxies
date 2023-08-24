@@ -13,9 +13,9 @@ contract AccountBoundProxy is Proxy, ERC1155Holder, ERC721Holder {
     using Clones for address;
     /// @notice The proxy registry
 
-    address internal immutable registry = msg.sender;
+    address internal immutable REGISTRY = msg.sender;
     /// @notice The proxy implementation
-    address internal immutable implementation = address(this);
+    address internal immutable IMPLEMENTATION = address(this);
     /// @notice Option logic that can be installed to enhance functionality of the proxy
     address internal pluginLogic;
 
@@ -42,7 +42,7 @@ contract AccountBoundProxy is Proxy, ERC1155Holder, ERC721Holder {
 
     function _checkOwner() internal view {
         address proxy =
-            implementation.predictDeterministicAddress(keccak256(abi.encode(msg.sender)), registry);
+            IMPLEMENTATION.predictDeterministicAddress(keccak256(abi.encode(msg.sender)), REGISTRY);
         if (proxy != address(this)) revert NotOwner();
     }
 }
